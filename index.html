@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portfolio</title>
+<style>
+  body { font-family: sans-serif; padding: 20px; }
+  h1, h2, h3 { margin: 0.5em 0; }
+  input, button { margin: 4px; padding: 6px; }
+  ul { padding-left: 20px; }
+  li { margin-bottom: 10px; }
+  .container { display: flex; gap: 20px; flex-wrap: wrap; }
+  .profile, .projects { flex: 1 1 300px; }
+  .project-item { margin-bottom: 10px; border-bottom: 1px solid #ddd; padding-bottom: 8px; }
+  a { color: blue; text-decoration: none; margin-right: 5px; }
+</style>
+</head>
+<body>
+
+<h1>Portfolio</h1>
+<div class="container">
+  <div class="profile">
+    <h2>Profile</h2>
+    <p id="name"></p>
+    <p id="email"></p>
+    <p id="education"></p>
+    <p id="skills"></p>
+    <p id="links"></p>
+
+    <h3>Search Profile & Projects</h3>
+    <input type="text" id="searchInput" placeholder="Search...">
+    <button id="searchBtn">Search</button>
+  </div>
+
+  <div class="projects">
+    <h2>Projects</h2>
+    <div>
+      <input type="text" id="skillInput" placeholder="Skill (e.g. Python)">
+      <button id="filterBtn">Filter</button>
+      <button id="clearBtn">Clear</button>
+    </div>
+    <ul id="projectList"></ul>
+  </div>
+</div>
+
+<script>
+  // ===== Sample Data =====
+  const profile = {
+    name: "Aarti Kumari",
+    email: "aartiitian99@gmail.com",
+    education: "B.Tech (ECE) - MNNIT Allahabad",
+    skills: ["Python", "React", "ML"],
+    links: {
+      github: "https://github.com/aarti",
+      linkedin: "https://linkedin.com/in/aarti",
+      portfolio: "https://aarti-portfolio.com"
+    }
+  };
+
+  const projects = [
+    { id: 1, title: "Advanced DSP Exam Solutions", description: "Detailed answers and code for ADSP exam", skills: ["Matlab","DSP","C++"] },
+    { id: 2, title: "WDM Optical Networks Report", description: "Group report on ML-based routing & wavelength assignment", skills: ["Optical Networks","Python","ML"] },
+    { id: 3, title: "React Portfolio Website", description: "Personal portfolio built with React", skills: ["React","JavaScript","CSS"] }
+  ];
+
+  // ===== DOM Elements =====
+  const nameEl = document.getElementById('name');
+  const emailEl = document.getElementById('email');
+  const educationEl = document.getElementById('education');
+  const skillsEl = document.getElementById('skills');
+  const linksEl = document.getElementById('links');
+  const projectListEl = document.getElementById('projectList');
+
+  const searchInput = document.getElementById('searchInput');
+  const searchBtn = document.getElementById('searchBtn');
+  const skillInput = document.getElementById('skillInput');
+  const filterBtn = document.getElementById('filterBtn');
+  const clearBtn = document.getElementById('clearBtn');
+
+  // ===== Functions =====
+  function renderProfile() {
+    nameEl.innerHTML = `<strong>${profile.name}</strong>`;
+    emailEl.textContent = profile.email;
+    educationEl.textContent = profile.education;
+    skillsEl.textContent = "Skills: " + profile.skills.join(', ');
+    linksEl.innerHTML = `<a href="${profile.links.github}" target="_blank">GitHub</a> 
+                         <a href="${profile.links.linkedin}" target="_blank">LinkedIn</a> 
+                         <a href="${profile.links.portfolio}" target="_blank">Portfolio</a>`;
+  }
+
+  function renderProjects(list) {
+    projectListEl.innerHTML = '';
+    if(list.length === 0) {
+      projectListEl.innerHTML = '<li>No projects found.</li>';
+      return;
+    }
+    list.forEach(p => {
+      const li = document.createElement('li');
+      li.className = 'project-item';
+      li.innerHTML = `<strong>${p.title}</strong> — ${p.description}<br>
+                      Skills: ${p.skills.join(', ')}`;
+      projectListEl.appendChild(li);
+    });
+  }
+
+  function filterBySkill() {
+    const skill = skillInput.value.trim().toLowerCase();
+    if(!skill) return renderProjects(projects);
+    const filtered = projects.filter(p => p.skills.some(s => s.toLowerCase() === skill));
+    renderProjects(filtered);
+  }
+
+  function searchAll() {
+    const q = searchInput.value.trim().toLowerCase();
+    const filteredProjects = projects.filter(p =>
+      p.title.toLowerCase().includes(q) || 
+      p.description.toLowerCase().includes(q) || 
+      p.skills.some(s => s.toLowerCase().includes(q))
+    );
+    renderProjects(filteredProjects);
+    // Profile search
+    if(profile.name.toLowerCase().includes(q) || profile.education.toLowerCase().includes(q)) {
+      renderProfile();
+    }
+  }
+
+  function clearFilter() {
+    skillInput.value = '';
+    searchInput.value = '';
+    renderProjects(projects);
+  }
+
+  // ===== Event Listeners =====
+  searchBtn.addEventListener('click', searchAll);
+  filterBtn.addEventListener('click', filterBySkill);
+  clearBtn.addEventListener('click', clearFilter);
+
+  // ===== Initial Render =====
+  renderProfile();
+  renderProjects(projects);
+</script>
+
+</body>
+</html>
